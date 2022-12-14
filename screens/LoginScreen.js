@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/core";
 import React, { useEffect, useState } from "react";
 import {
+  Image,
   KeyboardAvoidingView,
   StyleSheet,
   Text,
@@ -10,6 +11,7 @@ import {
 } from "react-native";
 import { auth } from "../firebase";
 import axios from "axios";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const API_KEY = "AIzaSyBOcDysjLEGH0ylbx2D47FUO95RmD1nbqs";
 
@@ -30,14 +32,12 @@ const LoginScreen = () => {
   }, []);
 
   const handleSignUp = async () => {
-    //     auth
-    //       .createUserWithEmailAndPassword(email, password)
-    //       .then((userCredentials) => {
-    //         const user = userCredentials.user;
-    //         console.log("Registered with:", user.email);
-    //       })
-    //       .catch((error) => console.log(error.message));
-    //
+    auth
+      .createUserWithEmailAndPassword(email, password)
+      .then((userCredentials) => {
+        const user = userCredentials.user;
+      })
+      .catch((error) => console.log(error.message));
   };
 
   const handleLogin = async () => {
@@ -45,7 +45,6 @@ const LoginScreen = () => {
       .signInWithEmailAndPassword(email, password)
       .then((userCredentials) => {
         const user = userCredentials.user;
-        console.log("Logged in with:", user.email);
       })
       .catch((error) => console.log(error.message));
     // try {
@@ -65,7 +64,13 @@ const LoginScreen = () => {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
+    <SafeAreaView style={styles.container} >
+      <Image 
+        source={{
+          uri: "https://www.tmrw.in/wp-content/uploads/2022/11/TMRW_Logo-1-2.gif",
+        }}
+        style={styles.image}
+      />
       <View style={styles.inputContainer}>
         <TextInput
           placeholder="Email"
@@ -93,7 +98,7 @@ const LoginScreen = () => {
           <Text style={styles.buttonOutlineText}>Register</Text>
         </TouchableOpacity>
       </View>
-    </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -104,19 +109,26 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    height: '100%',
+    backgroundColor: '#65696c',
+  },
+  image: {
+    width: 200,
+    height: 200,
+    resizeMode: "contain",
   },
   inputContainer: {
     width: "80%",
   },
   input: {
-    backgroundColor: "white",
+    backgroundColor: "#e6e8e9",
     paddingHorizontal: 15,
     paddingVertical: 10,
-    borderRadius: 10,
+    borderRadius: 5,
     marginTop: 5,
   },
   buttonContainer: {
-    width: "60%",
+    width: "80%",
     justifyContent: "center",
     alignItems: "center",
     marginTop: 40,
@@ -125,11 +137,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#0782F9",
     width: "100%",
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 5,
     alignItems: "center",
   },
   buttonOutline: {
-    backgroundColor: "white",
+    backgroundColor: "#e6e8e9",
     marginTop: 5,
     borderColor: "#0782F9",
     borderWidth: 2,
