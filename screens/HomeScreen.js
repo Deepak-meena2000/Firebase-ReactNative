@@ -1,27 +1,33 @@
 import { useNavigation } from "@react-navigation/core";
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { auth } from "../firebase";
+import { WebView } from 'react-native-webview';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
 
-  const handleSignOut = () => {
-    auth
-      .signOut()
-      .then(() => {
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (!user) {
         navigation.replace("Login");
-      })
-      .catch((error) => alert(error.message));
-  };
+      }
+    });
+
+    return unsubscribe;
+  }, [auth.currentUser]);
+
+  const user = auth.currentUser;
 
   return (
-    <View style={styles.container}>
-      <Text>Email: {auth.currentUser?.email}</Text>
-      <TouchableOpacity onPress={handleSignOut} style={styles.button}>
-        <Text style={styles.buttonText}>Sign out</Text>
-      </TouchableOpacity>
-    </View>
+    <WebView source={{ uri: "https://www.myntra.com/" }} />
+    // <View style={styles.container}>
+    //   <Text>Email: {user.email}</Text>
+    //   <Text>refreshToken: {user.refreshToken}</Text>
+    //   <TouchableOpacity onPress={handleSignOut} style={styles.button}>
+    //     <Text style={styles.buttonText}>Sign out</Text>
+    //   </TouchableOpacity>
+    // </View>
   );
 };
 
