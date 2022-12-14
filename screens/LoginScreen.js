@@ -12,6 +12,8 @@ import {
 import { auth } from "../firebase";
 import axios from "axios";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const API_KEY = "AIzaSyBOcDysjLEGH0ylbx2D47FUO95RmD1nbqs";
 
@@ -21,10 +23,44 @@ const LoginScreen = () => {
 
   const navigation = useNavigation();
 
+  const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('firebase_uid');
+      console.log("fbuid", value);
+      // if(value !== null) {
+      //   // value previously stored
+      // }
+      return value;
+    } catch(e) {
+      // error reading value
+      console.log("asyncstorage error", e.message);
+    }
+  }
+
+  useEffect(() => {
+    // check async storage
+    // if uid then gen token
+    // login with token
+    getData()
+      .then((uid) => {
+        console.log("uid in useeffect", uid);
+      })
+      .catch((error) => {
+        console.log("error in useeffect", error.message)
+      })
+    
+    // otherwise email pwd login
+  }, [])
+
+  const handleUserLogin = () => {
+    navigation.replace("Home");
+    // store uid in async storage
+  }
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        navigation.replace("Home");
+        handleUserLogin();
       }
     });
 

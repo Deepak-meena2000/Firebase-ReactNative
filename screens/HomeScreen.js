@@ -3,31 +3,49 @@ import React, { useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { auth } from "../firebase";
 import { WebView } from 'react-native-webview';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
+  const user = auth.currentUser;
+  // console.log("userobjkeys", Object.keys(user));
+
+  const storeData = async (value) => {
+    try {
+      await AsyncStorage.setItem('firebase_uid', value)
+    } catch (e) {
+      // saving error
+      console.log("asyncstorage error", error.message);
+    }
+  }
+
+  useEffect(() => {
+    // store uid in async storage
+    storeData(user.uid);
+  }, [])
+
+  const handleUserLogout = () => {
+    navigation.replace("Login");
+    // remove uid from async storage
+    AsyncStorage.removeItem('firebase_uid');
+  }
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (!user) {
-        navigation.replace("Login");
+        handleUserLogout();
       }
     });
 
     return unsubscribe;
   }, [auth.currentUser]);
 
-  const user = auth.currentUser;
-
   return (
-    <WebView source={{ uri: "https://www.myntra.com/" }} />
-    // <View style={styles.container}>
-    //   <Text>Email: {user.email}</Text>
-    //   <Text>refreshToken: {user.refreshToken}</Text>
-    //   <TouchableOpacity onPress={handleSignOut} style={styles.button}>
-    //     <Text style={styles.buttonText}>Sign out</Text>
-    //   </TouchableOpacity>
-    // </View>
+    // <WebView source={{ uri: "https://www.myntra.com/" }} />
+    <View style={styles.container}>
+      <Text>Email: {user.email}</Text>
+      <Text>Uid: {[user.uid, typeof(user.uid)]}</Text>
+    </View>
   );
 };
 
